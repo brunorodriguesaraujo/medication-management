@@ -43,7 +43,8 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Excluir Medicamento"),
-        content: const Text("Você tem certeza que deseja excluir esse medicamento?"),
+        content:
+            const Text("Você tem certeza que deseja excluir esse medicamento?"),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -81,15 +82,16 @@ class _HomePageState extends State<HomePage> {
       body: medications.isEmpty
           ? const EmptyPage()
           : Padding(
-            padding: const EdgeInsets.only(top: 24),
-            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 24),
+              child: ListView.builder(
                 itemCount: medications.length,
                 itemBuilder: (context, index) {
                   final med = medications[index];
                   return GestureDetector(
                     onLongPress: () => _showDeleteDialog(med),
                     child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -102,18 +104,23 @@ class _HomePageState extends State<HomePage> {
                           setState(() {
                             med.isChecked = value!;
                           });
-                          DatabaseHelper.instance.updateMedicamentCheckStatus(med.id!, med.isChecked);
+                          DatabaseHelper.instance.updateMedicamentCheckStatus(
+                              med.id!, med.isChecked);
                         },
                         title: Text(
                           med.name,
                           style: TextStyle(
-                            decoration: med.isChecked ? TextDecoration.lineThrough : TextDecoration.none,
+                            decoration: med.isChecked
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
                           ),
                         ),
                         subtitle: Text(
                           "Dose: ${med.dosage}\nFrequência: ${med.frequency}\nHorários: ${med.times.join(', ')}",
                           style: TextStyle(
-                            decoration: med.isChecked ? TextDecoration.lineThrough : TextDecoration.none,
+                            decoration: med.isChecked
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
                           ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
@@ -122,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-          ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToAddMedicament(),
         child: const Icon(Icons.add),

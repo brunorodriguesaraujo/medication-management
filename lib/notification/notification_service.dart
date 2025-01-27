@@ -1,26 +1,60 @@
+import 'dart:io';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
+  NotificationService._internal();
+  static final NotificationService _instance = NotificationService._internal();
+  factory NotificationService() => _instance;
+
   final notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<void> initNotification() async {
-
-    const initSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettingsAndroid = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
 
     const initSettingsIOS = DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true);
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
     const initSettings = InitializationSettings(
-        android: initSettingsAndroid, iOS: initSettingsIOS);
+      android: initSettingsAndroid,
+      iOS: initSettingsIOS,
+    );
 
-    await notificationsPlugin.initialize(initSettings);
+    await notificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (details) {
+        // Aqui você pode adicionar uma ação quando a notificação for tocada
+      },
+    );
 
+    // Inicializa timezone antes de solicitar permissões
     tz.initializeTimeZones();
+
+    // Solicita permissões após a inicialização
+    await requestPermission();
+  }
+
+  Future<void> requestPermission() async {
+    if (Platform.isAndroid) {
+      await notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
+    }
+
+    if (Platform.isIOS) {
+      await notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions();
+    }
   }
 
   NotificationDetails notificationDetails() {
@@ -31,6 +65,9 @@ class NotificationService {
         channelDescription: 'Medicament Notification Channel',
         importance: Importance.max,
         priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        enableLights: true,
       ),
       iOS: DarwinNotificationDetails(),
     );
@@ -42,20 +79,31 @@ class NotificationService {
     required String body,
     required DateTime scheduledTime,
   }) async {
+    tz.TZDateTime notificationTime =
+        tz.TZDateTime.from(scheduledTime, tz.local);
+
     await notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.from(scheduledTime, tz.local),
+      notificationTime,
       notificationDetails(),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
   Future<void> cancelNotification(int id) async {
     await notificationsPlugin.cancel(id);
+  }
+
+  Future<void> showTestNotification() async {
+    await notificationsPlugin.show(
+      0,
+      'Teste de Notificação',
+      'Se você está vendo isso, as notificações estão funcionando!',
+      notificationDetails(),
+    );
   }
 }
