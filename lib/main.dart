@@ -5,7 +5,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 Future<void> checkExactAlarmPermission() async {
   await Permission.scheduleExactAlarm.request();
-  await Permission.notification.request();
 }
 
 void main() async {
