@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class EmptyPage extends StatelessWidget {
   const EmptyPage({super.key});
@@ -7,15 +8,17 @@ class EmptyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 80,),
+        const SizedBox(
+          height: 80,
+        ),
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.hourglass_empty,
-                size: 150,
-                color: Colors.blueAccent,
+              Container(
+                width: 300,
+                height: 300,
+                child: Lottie.asset('assets/empty_animation.json'),
               ),
               const SizedBox(height: 20),
               Text(
@@ -29,7 +32,7 @@ class EmptyPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Parece que você ainda não adicionou nenhum item. Que tal começar agora?',
+                'Parece que você ainda não adicionou nenhum medicamento. Que tal começar agora?',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:medicationmanagement/data/database/database_helper.dart';
-import 'package:time_picker_spinner/time_picker_spinner.dart';
 
 import '../data/model/medicament.dart';
 import '../notification/notification_service.dart';
+import '../shared/frequency_dialog.dart';
+import '../shared/time_picker_modal.dart';
 
 class AddMedicamentPage extends StatefulWidget {
   const AddMedicamentPage({super.key});
@@ -78,6 +79,7 @@ class _AddMedicamentPageState extends State<AddMedicamentPage> {
                   controller: nameController,
                   decoration: const InputDecoration(
                     hintText: "Ex.: Paracetamol",
+                    hintStyle: TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -90,6 +92,7 @@ class _AddMedicamentPageState extends State<AddMedicamentPage> {
                   controller: dosageController,
                   decoration: const InputDecoration(
                     hintText: "Ex.: 1 Comprimido",
+                    hintStyle: TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -100,9 +103,9 @@ class _AddMedicamentPageState extends State<AddMedicamentPage> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    final frequency = await showDialog<String>(
+                    final frequency = await showDialog(
                       context: context,
-                      builder: (context) => _FrequencyPickerDialog(
+                      builder: (context) => FrequencyDialog(
                         options: frequencyOptions,
                       ),
                     );
@@ -242,82 +245,6 @@ class _AddMedicamentPageState extends State<AddMedicamentPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _FrequencyPickerDialog extends StatelessWidget {
-  final List<String> options;
-
-  const _FrequencyPickerDialog({required this.options});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Selecione a Frequência"),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: options.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(options[index]),
-              onTap: () {
-                Navigator.pop(context, options[index]);
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class TimePickerModal extends StatelessWidget {
-  const TimePickerModal({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    DateTime selectedTime = DateTime.now();
-
-    return Container(
-      height: 300,
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          const Text(
-            "Selecione o horário",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: TimePickerSpinner(
-              is24HourMode: true,
-              normalTextStyle:
-                  const TextStyle(fontSize: 18, color: Colors.grey),
-              highlightedTextStyle: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              spacing: 50,
-              itemHeight: 60,
-              locale: const Locale('pt', 'BR'),
-              isForce2Digits: true,
-              onTimeChange: (time) {
-                selectedTime = time;
-              },
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context, selectedTime);
-            },
-            child: const Text("Confirmar"),
-          ),
-        ],
       ),
     );
   }
