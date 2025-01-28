@@ -29,15 +29,11 @@ class NotificationService {
 
     await notificationsPlugin.initialize(
       initSettings,
-      onDidReceiveNotificationResponse: (details) {
-        // Aqui você pode adicionar uma ação quando a notificação for tocada
-      },
+      onDidReceiveNotificationResponse: (details) {},
     );
 
-    // Inicializa timezone antes de solicitar permissões
     tz.initializeTimeZones();
 
-    // Solicita permissões após a inicialização
     await requestPermission();
   }
 
@@ -96,14 +92,5 @@ class NotificationService {
 
   Future<void> cancelNotification(int id) async {
     await notificationsPlugin.cancel(id);
-  }
-
-  Future<void> showTestNotification() async {
-    await notificationsPlugin.show(
-      0,
-      'Teste de Notificação',
-      'Se você está vendo isso, as notificações estão funcionando!',
-      notificationDetails(),
-    );
   }
 }

@@ -5,18 +5,6 @@ import 'package:time_picker_spinner/time_picker_spinner.dart';
 import '../data/model/medicament.dart';
 import '../notification/notification_service.dart';
 
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: AddMedicamentPage(),
-    );
-  }
-}
-
 class AddMedicamentPage extends StatefulWidget {
   const AddMedicamentPage({super.key});
 
@@ -39,16 +27,26 @@ class _AddMedicamentPageState extends State<AddMedicamentPage> {
   final notificationService = NotificationService();
 
   void scheduleMedicationNotifications(Medicament medicament) {
-    for (String time in medicament.times) {
-      DateTime scheduledTime = DateTime.now().copyWith(
-        hour: int.parse(time.split(':')[0]), // A hora do time
-        minute: int.parse(time.split(':')[1]), // O minuto do time
-        second: 0,
-        millisecond: 0,
+    for (int i = 0; i < medicament.times.length; i++) {
+      String time = medicament.times[i];
+
+      DateTime now = DateTime.now();
+      DateTime scheduledTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        int.parse(time.split(':')[0]),
+        int.parse(time.split(':')[1]),
       );
 
+      if (scheduledTime.isBefore(now)) {
+        scheduledTime = scheduledTime.add(const Duration(days: 1));
+      }
+
+      int notificationId = int.parse('${medicament.id}$i');
+
       notificationService.scheduleNotification(
-        id: medicament.id!,
+        id: notificationId,
         title: 'Hora de tomar o medicamento',
         body: '${medicament.name} - Dose: ${medicament.dosage}',
         scheduledTime: scheduledTime,
@@ -90,7 +88,6 @@ class _AddMedicamentPageState extends State<AddMedicamentPage> {
                 ),
                 TextField(
                   controller: dosageController,
-                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     hintText: "Ex.: 1 Comprimido",
                     border: OutlineInputBorder(),

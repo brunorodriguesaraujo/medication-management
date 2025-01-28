@@ -4,6 +4,7 @@ import 'package:medicationmanagement/shared/empty_page.dart';
 
 import '../data/database/database_helper.dart';
 import '../data/model/medicament.dart';
+import '../notification/notification_service.dart';
 
 class HomePage extends StatefulWidget {
   final String title;
@@ -55,6 +56,7 @@ class _HomePageState extends State<HomePage> {
           TextButton(
             onPressed: () {
               _deleteMedicament(medicament);
+              cancelMedicationNotifications(medicament);
               Navigator.of(context).pop();
             },
             child: const Text("Excluir"),
@@ -70,6 +72,14 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => const AddMedicamentPage()),
     );
     _loadMedications();
+  }
+
+  void cancelMedicationNotifications(Medicament medicament) {
+    final notificationService = NotificationService();
+    for (int i = 0; i < medicament.times.length; i++) {
+      int notificationId = int.parse('${medicament.id}$i');
+      notificationService.cancelNotification(notificationId);
+    }
   }
 
   @override
